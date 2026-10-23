@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Your Account')}"></head>
+<body>
+<main class="frame">
+    <p class="eyebrow">Welcome back</p>
+    <img class="avatar" th:if="${picture}" th:src="${picture}" alt="Profile picture" referrerpolicy="no-referrer">
+    <h1 th:text="${name}">Your Name</h1>
+    <p class="lede">You have signed in successfully.</p>
+
+    <div class="rule" aria-hidden="true"><span>&#10086;</span></div>
+
+    <dl class="details">
+        <div><dt>Name</dt><dd th:text="${name}">Your Name</dd></div>
+        <div><dt>Email</dt><dd th:text="${email}">you@example.com</dd></div>
+        <div th:if="${twoFactorEnabled != null}">
+            <dt>Two-factor</dt>
+            <dd>
+                <span class="badge on" th:if="${twoFactorEnabled}">Enabled</span>
+                <span class="badge off" th:unless="${twoFactorEnabled}">Not enabled</span>
+            </dd>
+        </div>
+    </dl>
+
+    <div class="actions">
+        <a class="btn" href="/2fa-setup"
+           th:text="${twoFactorEnabled == true} ? 'Reconfigure Two-Factor Authentication' : 'Enable Two-Factor Authentication'">
+            Enable Two-Factor Authentication
+        </a>
+        <form action="/logout" method="post">
+            <button class="btn ghost" type="submit">Sign out</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

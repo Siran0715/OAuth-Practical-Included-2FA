@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Enable 2FA')}"></head>
+<body>
+<main class="frame">
+    <p class="eyebrow">Step up your security</p>
+    <h1>Two-Factor Authentication</h1>
+    <p class="lede">Scan the code with Google Authenticator or any TOTP app.</p>
+
+    <div class="qr"><img id="qrCode" alt="2FA QR code"></div>
+
+    <p style="margin-bottom:6px;color:var(--ink-soft);font-size:15px">Can&rsquo;t scan? Enter this key manually</p>
+    <div class="secret" id="secret">&hellip;</div>
+
+    <div class="rule" aria-hidden="true"><span>&#10086;</span></div>
+
+    <h2>Confirm the code</h2>
+    <p style="color:var(--ink-soft);font-size:15px">Type the 6-digit code now shown in your app.</p>
+
+    <input id="otp" type="text" maxlength="6" inputmode="numeric" autocomplete="one-time-code"
+           placeholder="000000" aria-label="6-digit code" autofocus>
+    <button class="btn" id="verifyBtn" type="button">Verify &amp; Enable 2FA</button>
+    <a class="btn ghost" href="/user">Back to account</a>
+
+    <p id="message" class="msg" role="status" aria-live="polite"></p>
+</main>
+
+<script>
+    const msg = document.getElementById("message");
+    const otpInput = document.getElementById("otp");
+    function show(text, ok) { msg.textContent = text; msg.className = "msg " + (ok ? "ok" : "err"); }
+
+    fetch("/2fa/setup")
+        .then(r => { if (!r.ok) throw new Error("Failed to load 2FA setup"); return r.json(); })
+        .then(d => {
+            document.getElementById("qrCode").src = d.qrcode;
+            document.getElementById("secret").textContent = d.secret;
+        })
+        .catch(e => { console.error(e); show(e.message, false); });
+
+    function verifyOtp() {
+        const otp = otpInput.value.trim();
+        if (!/^\d{6}$/.test(otp)) { show("Please enter a valid 6-digit OTP.", false); return; }
+        fetch("/2fa/verify?otp=" + encodeURIComponent(otp), { method: "POST" })
+            .then(r => r.text())
+            .then(t => show(t, t === "2FA enabled successfully"))
+            .catch(() => show("Verification failed.", false));
+    }
+    document.getElementById("verifyBtn").addEventListener("click", verifyOtp);
+    otpInput.addEventListener("keydown", e => { if (e.key === "Enter") verifyOtp(); });
+</script>
+</body>
+</html>

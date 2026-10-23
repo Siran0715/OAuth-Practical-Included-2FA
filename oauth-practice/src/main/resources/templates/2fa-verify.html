@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Verify Identity')}"></head>
+<body>
+<main class="frame">
+    <div class="crest" aria-hidden="true">&#9906;</div>
+    <p class="eyebrow">One more step</p>
+    <h1>Verify Your Identity</h1>
+    <p class="lede">Enter the 6-digit code from your authenticator app.</p>
+
+    <div class="rule" aria-hidden="true"><span>&#10086;</span></div>
+
+    <input id="otp" type="text" maxlength="6" inputmode="numeric" autocomplete="one-time-code"
+           placeholder="000000" aria-label="6-digit code" autofocus>
+    <button class="btn" id="verifyBtn" type="button">Verify</button>
+
+    <p id="message" class="msg" role="status" aria-live="polite"></p>
+    <p class="foot">Codes refresh every 30 seconds.</p>
+</main>
+
+<script>
+    const msg = document.getElementById("message");
+    const otpInput = document.getElementById("otp");
+    function show(text, ok) { msg.textContent = text; msg.className = "msg " + (ok ? "ok" : "err"); }
+
+    function verifyOtp() {
+        const otp = otpInput.value.trim();
+        if (!/^\d{6}$/.test(otp)) { show("Please enter a valid 6-digit OTP.", false); return; }
+        fetch("/2fa/login/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "otp=" + encodeURIComponent(otp)
+        })
+            .then(r => r.text())
+            .then(t => {
+                const ok = t === "2FA verified successfully";
+                show(t, ok);
+                if (ok) window.location.href = "/user";
+            })
+            .catch(e => { console.error(e); show("Verification failed.", false); });
+    }
+    document.getElementById("verifyBtn").addEventListener("click", verifyOtp);
+    otpInput.addEventListener("keydown", e => { if (e.key === "Enter") verifyOtp(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!--
+  Shared "classic" theme. Inlined through a fragment (not /static) so it is
+  served on every page, even while the session is still gated by
+  SecurityConfig / TwoFactorFilter.
+-->
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' · OAuth Practice'">OAuth Practice</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper: #f6f0e3;
+            --paper-deep: #ece3cf;
+            --card: #fffdf7;
+            --ink: #22232b;
+            --ink-soft: #5b5a63;
+            --navy: #1c2b4a;
+            --navy-deep: #131f38;
+            --gold: #a8812f;
+            --gold-soft: #d9c28a;
+            --burgundy: #7a1f2b;
+            --green: #2f5d3a;
+            --serif-display: 'Cormorant Garamond', 'Times New Roman', Georgia, serif;
+            --serif-text: 'Lora', Georgia, 'Times New Roman', serif;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --paper: #14172a;
+                --paper-deep: #0e1120;
+                --card: #1b2038;
+                --ink: #ece6d6;
+                --ink-soft: #a7a5b2;
+                --navy: #d9c28a;
+                --navy-deep: #f0dfae;
+                --gold: #d9b45f;
+                --gold-soft: #6b5a2e;
+                --burgundy: #e58a96;
+                --green: #8fd0a0;
+            }
+        }
+        * { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 16px;
+            font-family: var(--serif-text);
+            font-size: 17px;
+            line-height: 1.65;
+            color: var(--ink);
+            background:
+                radial-gradient(ellipse at 20% 0%, rgba(168,129,47,.14), transparent 55%),
+                radial-gradient(ellipse at 90% 100%, rgba(28,43,74,.12), transparent 50%),
+                var(--paper);
+        }
+        .frame {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card);
+            border: 1px solid var(--gold);
+            outline: 1px solid var(--gold-soft);
+            outline-offset: 6px;
+            padding: 44px 40px 36px;
+            text-align: center;
+            box-shadow: 0 18px 40px -18px rgba(19,31,56,.35);
+            animation: rise .6s ease both;
+        }
+        @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+        @media (prefers-reduced-motion: reduce) { .frame { animation: none; } }
+        @media (max-width: 480px) { .frame { padding: 32px 22px 28px; } }
+
+        .crest {
+            width: 52px; height: 52px; margin: 0 auto 14px;
+            border: 1px solid var(--gold); border-radius: 50%;
+            display: grid; place-items: center;
+            font-family: var(--serif-display); font-size: 26px; font-weight: 700;
+            color: var(--gold);
+        }
+        .eyebrow {
+            font-size: 12px; letter-spacing: .28em; text-transform: uppercase;
+            color: var(--gold); margin: 0 0 6px;
+        }
+        h1 {
+            font-family: var(--serif-display);
+            font-weight: 700; font-size: 38px; line-height: 1.1;
+            letter-spacing: .01em; color: var(--navy); margin: 0 0 8px;
+        }
+        h2 {
+            font-family: var(--serif-display);
+            font-weight: 600; font-size: 24px; color: var(--navy); margin: 0 0 6px;
+        }
+        .lede { color: var(--ink-soft); font-style: italic; margin: 0 auto 4px; max-width: 34ch; }
+        p { margin: 0 0 14px; }
+
+        .rule {
+            display: flex; align-items: center; gap: 12px;
+            margin: 24px 0; color: var(--gold);
+        }
+        .rule::before, .rule::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-soft), transparent); }
+        .rule span { font-size: 14px; }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%;
+            font: 500 16px/1 var(--serif-text); letter-spacing: .04em;
+            padding: 15px 22px; cursor: pointer; text-decoration: none;
+            border: 1px solid var(--navy); background: var(--navy); color: #fffdf7;
+            transition: background .2s, color .2s, transform .1s;
+        }
+        @media (prefers-color-scheme: dark) { .btn { color: #14172a; } .btn.ghost { color: var(--navy); } }
+        .btn:hover { background: var(--navy-deep); }
+        .btn:active { transform: translateY(1px); }
+        .btn:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+        .btn.ghost { background: transparent; color: var(--navy); }
+        .btn.ghost:hover { background: rgba(168,129,47,.12); }
+        .btn + .btn, .btn + form, form + .btn { margin-top: 12px; }
+
+        input[type=text] {
+            width: 100%; padding: 14px 12px; margin: 6px 0 16px;
+            font: 500 28px/1 var(--serif-display); letter-spacing: .5em; text-align: center; text-indent: .5em;
+            color: var(--ink); background: var(--paper);
+            border: 1px solid var(--gold-soft); border-bottom: 2px solid var(--gold);
+        }
+        input::placeholder { letter-spacing: .08em; font-size: 16px; color: var(--ink-soft); opacity: .7; text-indent: 0; }
+
+        .msg { min-height: 1.6em; margin: 16px 0 0; font-style: italic; }
+        .msg.ok { color: var(--green); }
+        .msg.err { color: var(--burgundy); }
+
+        .foot { margin-top: 26px; font-size: 13px; color: var(--ink-soft); letter-spacing: .04em; }
+        .foot a { color: var(--gold); }
+
+        .avatar {
+            width: 108px; height: 108px; border-radius: 50%; object-fit: cover;
+            border: 1px solid var(--gold); padding: 5px; background: var(--card);
+            margin: 0 auto 18px; display: block;
+        }
+        .details { margin: 0; text-align: left; border-top: 1px solid var(--gold-soft); }
+        .details div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 2px; border-bottom: 1px solid var(--gold-soft); }
+        .details dt { font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); align-self: center; }
+        .details dd { margin: 0; word-break: break-all; text-align: right; }
+        .badge {
+            display: inline-block; padding: 2px 12px; font-size: 13px; letter-spacing: .08em;
+            border: 1px solid currentColor;
+        }
+        .badge.on { color: var(--green); } .badge.off { color: var(--burgundy); }
+        .actions { margin-top: 26px; }
+
+        .qr {
+            display: inline-block; padding: 12px; background: #fff;
+            border: 1px solid var(--gold); outline: 1px solid var(--gold-soft); outline-offset: 4px;
+            margin: 6px 0 18px; min-height: 90px; min-width: 90px;
+        }
+        .qr img { display: block; width: 220px; max-width: 100%; height: auto; }
+        .secret {
+            display: inline-block; padding: 8px 14px; margin-bottom: 4px;
+            font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 15px; letter-spacing: .12em;
+            background: var(--paper); border: 1px dashed var(--gold); word-break: break-all;
+        }
+        .steps { text-align: left; margin: 0 0 6px; padding-left: 1.2em; color: var(--ink-soft); font-size: 15px; }
+    </style>
+</head>
+</html>

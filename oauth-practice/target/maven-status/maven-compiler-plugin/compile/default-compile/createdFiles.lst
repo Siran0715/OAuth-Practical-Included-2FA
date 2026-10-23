@@ -1,0 +1,12 @@
+com\siran\oauthpractice\service\QrCodeService.class
+com\siran\oauthpractice\repository\UserRepository.class
+com\siran\oauthpractice\service\TwoFactorService.class
+com\siran\oauthpractice\config\TwoFactorFilter.class
+com\siran\oauthpractice\config\Oauth2SuccessHandler.class
+com\siran\oauthpractice\config\SecurityConfig.class
+com\siran\oauthpractice\dto\TwoFactorSetupResponse.class
+com\siran\oauthpractice\controller\HomeController.class
+com\siran\oauthpractice\OauthPracticeApplication.class
+com\siran\oauthpractice\controller\UserController.class
+com\siran\oauthpractice\controller\TwoFactorController.class
+com\siran\oauthpractice\model\User.class
